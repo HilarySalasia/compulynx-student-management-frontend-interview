@@ -1,0 +1,17 @@
+/* In styles.scss or styles.css */
+.custom-snackbar {
+    /* Set a z-index value higher than any overlapping elements (e.g., dialogs have a default of 1300) */
+    z-index: 2000 !important;
+  }
+  
+  /* Alternatively, target the entire overlay container for all snackbars */
+  .cdk-overlay-container {
+    z-index: 2000 !important;
+  }
+  
+  /* A more specific method using :has to target only snackbar overlays */
+  .cdk-global-overlay-wrapper:has(> .cdk-overlay-pane > mat-snack-bar-container) {
+    z-index: 2000 !important;
+  }
+  
+// mdc-snackbar mat-mdc-snack-bar-container mat-snack-bar-container-enter mat-snack-bar-container-animations-enabled

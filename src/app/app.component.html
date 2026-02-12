@@ -1,16 +1,30 @@
 <main class="container-fluid">
-  <div class="sticky-top">
-    <div id="header" class="col-sm-12 col-md-12 col-lg-12 col-xl-12 col-xxl-12">
-      <app-header></app-header>
+  <div class="row">
+    <div class="sticky-top">
+      <div id="header" class="col-sm-12 col-md-12 col-lg-12 col-xl-12 col-xxl-12">
+        <app-header></app-header>
+      </div>
+      <div id="nav" class="col-sm-12 col-md-12 col-lg-12 col-xl-12 col-xxl-12">
+        <app-navigation></app-navigation>
+      </div>
     </div>
-    <div id="nav" class="col-sm-12 col-md-12 col-lg-12 col-xl-12 col-xxl-12">
-      <app-navigation></app-navigation>
+    <div id="content" class="col-sm-12 col-md-12 col-lg-12 col-xl-12 col-xxl-12 ">
+      <div class="row overflow-scroll" style=" min-height: 72vh; max-height: 72vh;">
+        <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12 col-xxl-12">
+          <router-outlet></router-outlet>
+        </div>
+      </div>
     </div>
+    <div class="row z-index-9999 position-fixed">
+      <div id="modals" class="col-sm-12 col-md-12 col-lg-12 col-xl-12 col-xxl-12 ">
+        <app-error-popup id="error-popup"></app-error-popup>
+      </div>
+    </div>
+    <div id="footer" class="col-sm-12 col-md-12 col-lg-12 col-xl-12 col-xxl-12">
+      <app-footer></app-footer>
+    </div>
+    
   </div>
-  <div id="content" class="col-sm-12 col-md-12 col-lg-12 col-xl-12 col-xxl-12">
-    <router-outlet></router-outlet>
-  </div>
-  <div id="footer" class="col-sm-12 col-md-12 col-lg-12 col-xl-12 col-xxl-12">
-    <app-footer></app-footer>
-  </div>
+  
+  
 </main>

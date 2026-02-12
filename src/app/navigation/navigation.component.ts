@@ -1,5 +1,4 @@
-import { DOCUMENT } from '@angular/common';
-import { Component, Inject } from '@angular/core';
+import { Component } from '@angular/core';
 
 @Component({
   selector: 'app-navigation',
@@ -9,7 +8,5 @@ import { Component, Inject } from '@angular/core';
   styleUrl: './navigation.component.scss'
 })
 export class NavigationComponent {
-constructor(@Inject(DOCUMENT) private document: Document) {
-    console.log('This is DOCUMENT:', this.document);
-  }
+
 }

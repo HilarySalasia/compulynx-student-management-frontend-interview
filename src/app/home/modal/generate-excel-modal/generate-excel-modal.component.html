@@ -1,0 +1,42 @@
+<div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content shadow-lg border-0">
+        
+        <div class="modal-header bg-light p-4">
+            <h5 class="modal-title d-flex align-items-center">
+                <i class="bi bi-file-earmark-excel me-2 text-success"></i> 
+                Generate Excel Modal
+            </h5>
+            <button type="button" class="btn-close" (click)="onCancel()" aria-label="Close"></button>
+        </div>
+
+        <div class="modal-body p-4">
+            <form>
+                <div class="mb-3">
+                    <label for="rateCode" class="form-label fw-bold">No. of Rows</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-list-ol"></i></span>
+                        <input type="number" 
+                               class="form-control" 
+                               id="rateCode" 
+                               name="rateCode" 
+                               [(ngModel)]="numberOfRows" 
+                               min="1" 
+                               placeholder="Enter number of rows"
+                               required>
+                    </div>
+                    <div class="form-text">Specify how many records to generate.</div>
+                </div>
+            </form>
+        </div>
+
+        <div class="modal-footer bg-light border-top-0">
+            <button type="button" class="btn btn-outline-secondary px-4 mx-2 my-2" (click)="onCancel()">
+                Cancel
+            </button>
+            <button type="button" class="btn btn-success px-4 d-flex align-items-center mx-2 my-2" (click)="onSave()">
+                <i class="bi bi-download me-2"></i> Generate
+            </button>
+        </div>
+        
+    </div>
+</div>

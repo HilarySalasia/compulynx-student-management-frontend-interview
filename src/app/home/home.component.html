@@ -1,0 +1,146 @@
+<div class="row mt-4">
+    <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12 col-xxl-12 ">
+        <div class="row">
+            <div class="col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6"> 
+                <div class="row justify-content-start">
+                    <div class="col-sm-12 col-md-4 col-lg-4 col-xl-4 col-xxl-4">
+                        <button class="btn btn-primary" (click)="generateExcelFile()">Generate Excel File</button>
+                    </div>
+                    <div class="col-sm-12 col-md-4 col-lg-4 col-xl-4 col-xxl-4">
+                        <button class="btn btn-secondary" (click)="uploadExcelFileToConvertToCsv('convert')">Convert Excel to CSV File</button>
+                    </div>
+                    <div class="col-sm-12 col-md-4 col-lg-4 col-xl-4 col-xxl-4">
+                        <button class="btn btn-success" (click)="uploadExcelFileToConvertToCsv('upload')">Upload Student Data</button>
+                    </div>
+                    
+                </div>
+            </div>
+            <div class="col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6 "> 
+                <div class="row justify-content-end">
+                    <div class="col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6 inline">
+                        <div class="row justify-content-end">
+                            <label class="col-4">Export Data: </label>
+                            <div class="col-4">
+                                <select #exportSelect class="form-select col-2" id="exportData" (change)="exportData(exportSelect.value)">
+                                    <option selected disabled>Select an Option</option>
+                                    <option value="excel">Excel</option>
+                                    <option value="csv">CSV</option>
+                                    <option value="pdf">PDF</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row justify-content-end">
+            <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12 col-xxl-12">
+                <div class="m-4">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                              <th>
+                                <div class="form-check">
+                                  <input class="form-check-input" type="checkbox" id="selectAll">
+                                </div>
+                              </th>
+                              <th (click)="sort('id')" style="cursor: pointer">
+                                Student Id @if(sortColumn === 'id'){ {{ sortDirection === 'asc' ? '↑' : '↓' }} }
+                              </th>
+                              <th (click)="sort('firstName')" style="cursor: pointer">
+                                First Name @if(sortColumn === 'firstName'){ {{ sortDirection === 'asc' ? '↑' : '↓' }} }
+                              </th>
+                              <th (click)="sort('lastName')" style="cursor: pointer">
+                                Last Name @if(sortColumn === 'lastName'){ {{ sortDirection === 'asc' ? '↑' : '↓' }} }
+                              </th>
+                              <th (click)="sort('className')" style="cursor: pointer">
+                                Class Name @if(sortColumn === 'className'){ {{ sortDirection === 'asc' ? '↑' : '↓' }} }
+                              </th>
+                              <th (click)="sort('score')" style="cursor: pointer">
+                                Score @if(sortColumn === 'score'){ {{ sortDirection === 'asc' ? '↑' : '↓' }} }
+                              </th>
+                              <th>Actions</th>
+                            </tr>
+                        </thead>
+                      
+                      <tbody >
+                        @if (visibleStudentData.length > 0) {
+                            @for (student of visibleStudentData; track $index) {
+                            <tr >
+                                <td>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="flexCheckDefault" (change)="toggleStudentSelection($index)">
+                                    </div>
+                                </td>
+                                <td>{{student.studentId}}</td>
+                                <td>{{student.firstName}}</td>
+                                <td>{{student.lastName}}</td>
+                                <td>{{student.className}}</td>
+                                <td>{{student.score}}</td>
+                                <td class="d-flex gap-2">
+                                    <button class="btn btn-success btn-sm" (click)="editStudent(student)">Edit</button>
+                                    <button class="btn btn-danger btn-sm" (click)="removeStudent(student)">Delete</button>
+                                </td>
+                            </tr>
+                            }
+                        } @else {
+                          <tr>
+                            <td colspan="6" class="text-center p-4 text-muted">
+                              <strong>No records found.</strong> Click "Add Student" to start.
+                            </td>
+                          </tr>
+                        }
+                      </tbody>
+                    </table>
+
+                    <div class="row">
+                        <div class="col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6">
+                            <div class="row">
+                                <div class="col-sm-12 col-md-3 col-lg-3 col-xl-3 col-xxl-3">
+                                    <p>Showing {{ visibleStudentData.length }} of {{ students.length }} students</p>
+                                </div>
+                                <div class="col-sm-12 col-md-9 col-lg-9 col-xl-9 col-xxl-9 inline">
+                                    <div class="row ">
+                                        <label class="col-2" for="itemsPerPage">Items per page:</label>
+                                        <div class="col-2">
+                                            <select class="form-select col-2" id="itemsPerPage" [(ngModel)]="pageSize" (change)="setPage(1)">
+                                                <option *ngFor="let option of itemsPerPageOptions" [value]="option">{{ option }}</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            
+                        </div>
+                        <div class="col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6 text-end">
+                            <p>Total Pages: {{ totalPages }}</p>
+                        </div>
+
+                    </div>
+
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination justify-content-center">
+                          <li class="page-item" [class.disabled]="currentPage === 1">
+                            <a class="page-link" (click)="setPage(currentPage - 1)" role="button">Previous</a>
+                          </li>
+                          
+                          @for (p of [].constructor(totalPages); track $index) {
+                            <li class="page-item" [class.active]="currentPage === $index + 1">
+                              <a class="page-link" (click)="setPage($index + 1)" role="button">{{ $index + 1 }}</a>
+                            </li>
+                          }
+                    
+                          <li class="page-item" [class.disabled]="currentPage === totalPages">
+                            <a class="page-link" (click)="setPage(currentPage + 1)" role="button">Next</a>
+                          </li>
+                        </ul>
+                    </nav>
+                  
+                    <button class="btn btn-primary" (click)="addStudent()">Add Student</button>
+                  </div>
+            </div>
+        </div>
+    </div>
+</div>

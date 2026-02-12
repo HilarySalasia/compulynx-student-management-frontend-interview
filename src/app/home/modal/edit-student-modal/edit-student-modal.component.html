@@ -1,0 +1,76 @@
+<div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content shadow-lg border-0">
+        
+        <div class="modal-header bg-light p-4">
+            <h5 class="modal-title d-flex align-items-center">
+                <i class="bi bi-file-earmark-excel me-2 text-success"></i> 
+                Generate Excel Modal
+            </h5>
+            <button type="button" class="btn-close" (click)="onCancel()" aria-label="Close"></button>
+        </div>
+
+        <div class="modal-body p-4">
+            <form>
+                <div class="mb-3 ">
+                    <label for="rateCode" class="form-label fw-bold mt-3">First Name</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-list-ol"></i></span>
+                        <input type="text" 
+                               class="form-control" 
+                               id="firstName" 
+                               name="firstName"
+                               [(ngModel)]="student.firstName"
+                               placeholder="Enter number of rows"
+                               required>
+                    </div>
+                    <label for="rateCode" class="form-label fw-bold mt-3">Last Name</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-list-ol"></i></span>
+                        <input type="text" 
+                               class="form-control" 
+                               id="lastName" 
+                               name="lastName" 
+                               [(ngModel)]="student.lastName"
+                               placeholder="Enter number of rows"
+                               required>
+                    </div>
+                    <label for="rateCode" class="form-label fw-bold mt-3">Class Name</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-list-ol"></i></span>
+                        <select class="form-select" id="className" name="className" [(ngModel)]="student.className" required>
+                            <option disabled selected>Select Class</option> 
+                            <option value="Class1">Class1</option> 
+                            <option value="Class2">Class2</option> 
+                            <option value="Class3">Class3</option>
+                            <option value="Class4">Class4</option>
+                            <option value="Class5">Class5</option>
+                        </select>
+                    </div>
+                    <label for="rateCode" class="form-label fw-bold mt-3">Score</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-list-ol"></i></span>
+                        <input type="number" 
+                               class="form-control" 
+                               id="score" 
+                               name="score" 
+                               min="1" 
+                               [(ngModel)]="student.score"
+                               placeholder="Enter number of rows"
+                               required>
+                    </div>
+                    <div class="form-text">Specify how many records to generate.</div>
+                </div>
+            </form>
+        </div>
+
+        <div class="modal-footer bg-light border-top-0">
+            <button type="button" class="btn btn-outline-secondary px-4 mx-2 my-2" (click)="onCancel()">
+                Cancel
+            </button>
+            <button type="button" class="btn btn-success px-4 d-flex align-items-center mx-2 my-2" (click)="onSave()">
+                <i class="bi bi-download me-2"></i> Update
+            </button>
+        </div>
+        
+    </div>
+</div>
