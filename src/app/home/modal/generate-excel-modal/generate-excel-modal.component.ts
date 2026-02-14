@@ -6,6 +6,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { EventEmitter } from 'stream';
 import { ExcelService } from '../../../service/excel.service';
 import { GlobalServiceService } from '../../../service/global-service.service';
+import { LoadingScreenService } from '../../../loading-screen/loading-screen.service';
+import { Observable, Subject } from 'rxjs';
 
 @Component({
   selector: 'app-generate-excel-modal',
@@ -22,13 +24,14 @@ export class GenerateExcelModalComponent {
   // @Output() saveRate = new EventEmitter();
   // @Output() cancelRate = new EventEmitter();
   numberOfRows = 0;
+  loading = new Subject<boolean>();
 
   constructor(
     public dialogRef: MatDialogRef<GenerateExcelModalComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any,
     private snackBar: MatSnackBar,
     private excelService: ExcelService,
-    private globalService: GlobalServiceService
+    private loadingScreenService: LoadingScreenService
   ) { 
     // console.log('Prem Rate: ', data.premRate )
     // this.ordPremRate = data.premRate;
@@ -43,11 +46,12 @@ export class GenerateExcelModalComponent {
   onSave() {
     // Validate input fields here
 
-    
+    this.loadingScreenService.isLoading.next(true);
     // console.log("read pmas: ", this.lmsPremiumMasks.pmasCode);
     this.excelService.generateExcelFile(this.numberOfRows).subscribe({
       next:(result) => {
         console.log("result: ", result)
+        this.loadingScreenService.isLoading.next(false);
         this.snackBar.open(result.text.toString(), 'Close', {
           duration: 3000,
           horizontalPosition: "end",

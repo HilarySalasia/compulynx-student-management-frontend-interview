@@ -1,4 +1,4 @@
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Student } from '../model/student';
 import { environment } from '../../environments/environment.development';
@@ -29,12 +29,15 @@ export class ExcelService {
     return this.http.post<TextResponse>(`${this.apiUrl}/convertToCsv`, formData);
   }
 
-  exportToExcelFile(data: Array<Student>) {
-    return this.http.post(`${this.apiUrl}/exportToExcelFile`, data, {
-      responseType: 'blob',
-      headers: {
-        'Content-Type': 'application/json'
+  exportToExcelFile(): Observable<Blob> { 
+    return this.http.post(`${this.apiUrl}/exportToExcelFile`, 
+      {},
+      {
+        responseType: 'blob', 
+        headers: new HttpHeaders({
+          'Content-Type': 'application/json'
+        })
       }
-    });
+    );
   }
 }

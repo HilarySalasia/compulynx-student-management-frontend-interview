@@ -4,8 +4,9 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ExcelService } from '../../../service/excel.service';
-import { Observable } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { CsvService } from '../../../service/csv.service';
+import { LoadingScreenService } from '../../../loading-screen/loading-screen.service';
 
 @Component({
   selector: 'app-upload-file-modal',
@@ -25,14 +26,15 @@ export class UploadFileModalComponent {
   numberOfRows = 0;
   fileToUpload: File | null = null;
   convert: boolean = false;
-  upload: boolean = false
+  upload: boolean = false;
 
   constructor(
     public dialogRef: MatDialogRef<UploadFileModalComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any,
     private snackBar: MatSnackBar,
     private excelService: ExcelService,
-    private csvService: CsvService
+    private csvService: CsvService,
+    private loadingScreenService: LoadingScreenService
   ) { 
     console.log('Prem Rate: ', data )
     this.convert = data.convertToCSV;
@@ -117,8 +119,10 @@ export class UploadFileModalComponent {
     formData.append('fileKey', fileToUpload, fileToUpload.name);
 
     if (this.convert) {
+      this.loadingScreenService.isLoading.next(true);
       this.excelService.convertExcelToCsv(fileToUpload).subscribe({
         next: (result) => {
+          this.loadingScreenService.isLoading.next(false);
           this.snackBar.open(result.text.toString(), 'Close', {
             duration: 5000,
             horizontalPosition: "end",
@@ -128,6 +132,7 @@ export class UploadFileModalComponent {
         },
 
         error: (err) => {
+          this.loadingScreenService.isLoading.next(false);
           this.snackBar.open(err.error.error, 'Close', {
             duration: 5000,
             horizontalPosition: "end",
@@ -140,8 +145,10 @@ export class UploadFileModalComponent {
         }
       });
     } else if (this.upload) {
+      this.loadingScreenService.isLoading.next(true);
       this.csvService.uploadStudentsData(fileToUpload).subscribe({
         next: (result) => {
+          this.loadingScreenService.isLoading.next(false);
           this.snackBar.open('Data Uploaded Successfully', 'Close', {
             duration: 5000,
             horizontalPosition: "end",
@@ -151,6 +158,7 @@ export class UploadFileModalComponent {
         },
 
         error: (err) => {
+          this.loadingScreenService.isLoading.next(false);
           this.snackBar.open(err.error.error, 'Close', {
             duration: 5000,
             horizontalPosition: "end",

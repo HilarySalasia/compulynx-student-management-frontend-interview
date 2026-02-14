@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Student } from '../model/student';
@@ -17,6 +17,21 @@ export class StudentService {
 
   getAllStudents() {
     return this.http.get<Array<Student>>(this.apiUrl);
+  }
+
+  getStudentById (studentId: number): Observable<Student> {
+    console.log("Id: ", studentId)
+    return this.http.get<Student>(`${this.apiUrl}/${studentId}`);
+  }
+
+  getStudentsByClassName(className: string, page: number, size: number): Observable<PaginatedStudent> {
+    // Create query parameters
+    const params = new HttpParams()
+      .set('className', className)
+      .set('page', page.toString())
+      .set('size', size.toString());
+
+    return this.http.get<PaginatedStudent>(`${this.apiUrl}/byClassName`, { params });
   }
 
   editStudent(studentId: Number, data: Student): Observable<Student> {

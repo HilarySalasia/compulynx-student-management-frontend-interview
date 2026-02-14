@@ -7,6 +7,8 @@ import { ExcelService } from '../../../service/excel.service';
 import { CsvService } from '../../../service/csv.service';
 import { Student } from '../../../model/student';
 import { StudentService } from '../../../service/student.service';
+import { LoadingScreenService } from '../../../loading-screen/loading-screen.service';
+import { Subject } from 'rxjs';
 
 @Component({
   selector: 'app-edit-student-modal',
@@ -22,11 +24,13 @@ import { StudentService } from '../../../service/student.service';
 })
 export class EditStudentModalComponent {
   student: Student = <Student>{};
+
   constructor(
     public dialogRef: MatDialogRef<EditStudentModalComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any,
     private snackBar: MatSnackBar,
-    private studentService: StudentService
+    private studentService: StudentService,
+    private loadingScreenService: LoadingScreenService
   ) { 
     console.log('Prem Rate: ', data )
     this.student = data.studentData;
@@ -34,8 +38,10 @@ export class EditStudentModalComponent {
 
   // Event handlers for buttons
   onSave() {
+    this.loadingScreenService.isLoading.next(true);
     this.studentService.editStudent(this.student.studentId, this.student).subscribe({
       next: (response) => {
+        this.loadingScreenService.isLoading.next(false);
         this.snackBar.open('Data Updated Successfully', 'Close', {
           duration: 5000,
           horizontalPosition: "end",
@@ -45,6 +51,7 @@ export class EditStudentModalComponent {
       },
 
       error: (err) => {
+        this.loadingScreenService.isLoading.next(false);
         this.snackBar.open(err.error.error, 'Close', {
           duration: 5000,
           horizontalPosition: "end",

@@ -33,6 +33,41 @@
                 </div>
             </div>
         </div>
+        <div class="row mt-4">
+            <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12 col-xxl-12"> 
+                <div class="row">
+                    <div class="col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6 inline">
+                      <div class="row justify-content-start">
+                        <label class="col-5" for="searchByName">Search by Class Name: </label>
+                        <div class="col-4">
+                            <input type="text" class="form-control" placeholder="Search by Name" [(ngModel)]="studentId">
+                        </div>
+                        <div class="col-3">
+                            <button class="btn btn-primary" (click)="searchByStudentId()">Search</button>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6 inline">
+                      <div class="row justify-content-end">
+                        <label class="col-5" for="searchByName">Filter by class: </label>
+                        <div class="col-4">
+                            <select class="form-select col-2" id="filterByClass" [(ngModel)]="selectedClass" (change)="filterByClass()">
+                              <option selected disabled>Select A Class</option>
+                              <option value="AllClassess">All Classes</option>
+                              <option value="Class1">Class1</option>
+                              <option value="Class2">Class2</option>
+                              <option value="Class3">Class3</option>
+                              <option value="Class4">Class4</option>
+                              <option value="Class5">Class5</option>
+                            </select>
+                        </div>
+                      </div>
+                    </div>
+                    
+                </div>
+            </div>
+
+        </div>
         
         <div class="row justify-content-end">
             <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12 col-xxl-12">
@@ -121,24 +156,22 @@
                     </div>
 
                     <nav aria-label="Page navigation">
-                        <ul class="pagination justify-content-center">
-                          <li class="page-item" [class.disabled]="currentPage === 1">
-                            <a class="page-link" (click)="setPage(currentPage - 1)" role="button">Previous</a>
+                      <ul class="pagination justify-content-center">
+                        <li class="page-item" [class.disabled]="currentPage === 1">
+                          <a class="page-link" (click)="setPage(currentPage - 1)" role="button">Previous</a>
+                        </li>
+                        
+                        @for (p of visiblePages; track p) {
+                          <li class="page-item" [class.active]="currentPage === p">
+                            <a class="page-link" (click)="setPage(p)" role="button">{{ p }}</a>
                           </li>
-                          
-                          @for (p of [].constructor(totalPages); track $index) {
-                            <li class="page-item" [class.active]="currentPage === $index + 1">
-                              <a class="page-link" (click)="setPage($index + 1)" role="button">{{ $index + 1 }}</a>
-                            </li>
-                          }
+                        }
                     
-                          <li class="page-item" [class.disabled]="currentPage === totalPages">
-                            <a class="page-link" (click)="setPage(currentPage + 1)" role="button">Next</a>
-                          </li>
-                        </ul>
+                        <li class="page-item" [class.disabled]="currentPage === totalPages">
+                          <a class="page-link" (click)="setPage(currentPage + 1)" role="button">Next</a>
+                        </li>
+                      </ul>
                     </nav>
-                  
-                    <button class="btn btn-primary" (click)="addStudent()">Add Student</button>
                   </div>
             </div>
         </div>

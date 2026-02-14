@@ -12,6 +12,8 @@ import { CsvService } from '../service/csv.service';
 import { Student } from '../model/student';
 import { EditStudentModalComponent } from './modal/edit-student-modal/edit-student-modal.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { response } from 'express';
+import { LoadingScreenService } from '../loading-screen/loading-screen.service';
 
 @Component({
   selector: 'app-home',
@@ -25,7 +27,7 @@ export class HomeComponent {
   visibleStudentData : any[] = [];
   students: any[] = [];
   paginatedStudent: PaginatedStudent = <PaginatedStudent>{};
-  currentPage = 0;
+  currentPage = 1;
   pageSize : number = 5;
   itemsPerPageOptions = [5, 10, 20, 50, 100];
   selectAllItems: boolean = false;
@@ -35,6 +37,8 @@ export class HomeComponent {
   totalPages = 0;
   convertToCSV: boolean = false;
   uploadCSVData: boolean = false;
+  studentId: number = 0;
+  selectedClass: string = '';
 
   constructor(
     private fb: FormBuilder,
@@ -43,15 +47,15 @@ export class HomeComponent {
     private dialog: MatDialog,
     private excelService: ExcelService,
     private csvService: CsvService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private loadingScreenService: LoadingScreenService
   ) {
     
   }
   
 
   ngOnInit() {
-    this.getAllStudentData();
-    this.getPaginatedStudents(this.currentPage, this.pageSize, "studentId", this.sortDirection);
+    this.getPaginatedStudents(this.currentPage-1, this.pageSize, "studentId", this.sortDirection);
   }
 
   generateExcelFile() {
@@ -108,21 +112,11 @@ export class HomeComponent {
     });
   }
 
-  addStudent(data: any = {}) {
-    const row = {
-      id: data.id || '',
-      firstName: data.first || '',
-      lastName: data.last || '',
-      className: data.class || '',
-      score: data.score || 0
-    };
-    this.students.push(row);
-  }
-
   removeStudent(student: any) {
-    console.log("Student Data: ", student)
+    this.loadingScreenService.isLoading.next(true);
     this.studentService.deleteStudentById(student.studentId).subscribe({
       next: () => {
+        this.loadingScreenService.isLoading.next(false);
         this.snackBar.open('Student Data removed successfully', 'Close', {
           duration: 5000,
           horizontalPosition: "end",
@@ -137,7 +131,6 @@ export class HomeComponent {
   }
 
   editStudent(student: any) {
-    console.log("Student Data: ", student)
     const dialogRef = this.dialog.open(EditStudentModalComponent, {
       data: {
         studentData: student
@@ -154,6 +147,34 @@ export class HomeComponent {
     }
   }
 
+  searchByStudentId() {
+    this.loadingScreenService.isLoading.next(true);
+    this.studentService.getStudentById(this.studentId).subscribe({
+      next: (response) => {
+        this.loadingScreenService.isLoading.next(false);
+        this.visibleStudentData = [];
+        this.visibleStudentData.push(response);
+      }
+
+    })
+  }
+
+  filterByClass() {
+    if (this.selectedClass === 'AllClassess' || this.selectedClass === ''){
+      this.getPaginatedStudents(this.currentPage - 1, this.pageSize, "studentId", this.sortDirection);
+    } else {
+      this.studentService.getStudentsByClassName(this.selectedClass, this.currentPage, this.pageSize).subscribe({
+        next: (response) => {
+          this.visibleStudentData = [];
+          this.visibleStudentData = response.content;
+          this.totalPages = response.totalPages;
+        }
+  
+      });
+    }
+    
+  }
+
   getVisibleStudents() {
     
     const startIndex = (this.currentPage - 1) * this.pageSize;
@@ -165,8 +186,13 @@ export class HomeComponent {
   setPage(page: number) {
     if (page >= 1 && page <= this.totalPages) {
       this.currentPage = page;
+      
+      // if (this.selectedClass !== 'AllClassess') {
+        
+      // }
+      this.filterByClass();
 
-      this.getPaginatedStudents(this.currentPage - 1, this.pageSize, this.sortColumn, this.sortDirection);
+      // this.getPaginatedStudents(this.currentPage - 1, this.pageSize, this.sortColumn, this.sortDirection);
       this.cdr.detectChanges();
     }
   }
@@ -206,35 +232,106 @@ export class HomeComponent {
     const type: string = event;
     console.log("Student Data: ", this.students);
     if (type === 'excel') {
-      this.excelService.exportToExcelFile(this.students).subscribe({
+      this.loadingScreenService.isLoading.next(true);
+      this.excelService.exportToExcelFile().subscribe({
         next: (response) => {
+          this.loadingScreenService.isLoading.next(false);
           console.log("File: ", response);
-          this.downloadFile(response, 'application/vnd.ms-excel')
+          this.downloadFile(response, 'student_data', 'application/vnd.ms-excel')
+        },
 
+        error: (err) => {
+          this.loadingScreenService.isLoading.next(false);
+          this.snackBar.open(err.error.error, 'Close', {
+            duration: 5000,
+            horizontalPosition: "end",
+            panelClass: "notif-error"
+          });
+  
+          console.error('Error saving data', err);
         }
       })
     } else if (type === 'csv') {
-        this.csvService.exportToCsvFile(this.students).subscribe({
+      this.loadingScreenService.isLoading.next(true);
+        this.csvService.exportToCsvFile().subscribe({
           next: (response) => {
+            this.loadingScreenService.isLoading.next(false);
             console.log("File: ", response);
-            this.downloadFile(response, 'text/csv')
+            this.downloadFile(response, 'student_data','text/csv')
 
+          },
+          error: (err) => {
+            this.loadingScreenService.isLoading.next(false);
+            this.snackBar.open(err.error.error, 'Close', {
+              duration: 5000,
+              horizontalPosition: "end",
+              panelClass: "notif-error"
+            });
+    
+            console.error('Error saving data', err);
           }
       })
     } else if (type === 'pdf') {
-      this.csvService.exportToPdfFile(this.students).subscribe({
+      this.csvService.exportToPdfFile().subscribe({
         next: (response) => {
           console.log("File: ", response);
-          this.downloadFile(response, 'application/pdf')
+          this.downloadFile(response, 'student_data', 'application/pdf')
 
+        },
+        error: (err) => {
+          this.snackBar.open(err.error.error, 'Close', {
+            duration: 5000,
+            horizontalPosition: "end",
+            panelClass: "notif-error"
+          });
+  
+          console.error('Error saving data', err);
         }
     })
   }
   }
 
-  downloadFile(data: BlobPart, dataType: string) {
+  downloadFile(data: BlobPart, fileName: string, dataType: string) {
+    // 1. Create the Blob with the correct MIME type
+    console.log("Blob Data: ", data);
     const blob = new Blob([data], { type: dataType });
-    const url= window.URL.createObjectURL(blob);
-    window.open(url);
+    
+    // 2. Create a hidden link element
+    const link = document.createElement('a');
+    const url = window.URL.createObjectURL(blob);
+    
+    // 3. Set the download attributes
+    link.href = url;
+    link.download = fileName; // Crucial: This tells the browser to save, not open
+    
+    // 4. Append, click, and cleanup
+    document.body.appendChild(link);
+    link.click();
+    
+    // 5. Release memory and remove element
+    setTimeout(() => {
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+    }, 100);
+  }
+
+  
+
+  get visiblePages(): number[] {
+    const maxVisible = 20;
+    let start = Math.max(1, this.currentPage - Math.floor(maxVisible / 2));
+    let end = start + maxVisible - 1;
+  
+    // Adjust if we are near the end of the total pages
+    if (end > this.totalPages) {
+      end = this.totalPages;
+      start = Math.max(1, end - maxVisible + 1);
+    }
+  
+    const pages = [];
+    for (let i = start; i <= end; i++) {
+      pages.push(i);
+    }
+    return pages;
   }
 }
