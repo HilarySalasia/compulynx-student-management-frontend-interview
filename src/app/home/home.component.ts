@@ -50,9 +50,7 @@ export class HomeComponent {
 
   ngOnInit() {
     this.getPaginatedStudents(this.currentPage-1, this.pageSize, "studentId", this.sortDirection);
-    const arr = [1,2,2,3,4,1,5,5,6];
-    const uniqueArr = [...new Set(arr)]
-    console.log(uniqueArr);
+    
   }
 
   generateExcelFile() {
