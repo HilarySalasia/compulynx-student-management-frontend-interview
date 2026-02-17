@@ -38,10 +38,8 @@ export class EditStudentModalComponent {
 
   // Event handlers for buttons
   onSave() {
-    this.loadingScreenService.isLoading.next(true);
     this.studentService.editStudent(this.student.studentId, this.student).subscribe({
       next: (response) => {
-        this.loadingScreenService.isLoading.next(false);
         this.snackBar.open('Data Updated Successfully', 'Close', {
           duration: 5000,
           horizontalPosition: "end",
@@ -51,14 +49,11 @@ export class EditStudentModalComponent {
       },
 
       error: (err) => {
-        this.loadingScreenService.isLoading.next(false);
         this.snackBar.open(err.error.error, 'Close', {
           duration: 5000,
           horizontalPosition: "end",
           panelClass: "notif-error"
         });
-        this.dialogRef.close({ successful: false });
-
         console.error('Error saving data', err);
         this.dialogRef.close({ successful: false });
       }

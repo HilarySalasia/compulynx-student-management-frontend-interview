@@ -1,19 +1,15 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component } from '@angular/core';
-import { AbstractControl, FormArray, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { ChangeDetectorRef, Component } from '@angular/core';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { StudentService } from '../service/student.service';
-import { start } from 'node:repl';
 import { PaginatedStudent } from '../model/paginatedStudent';
 import { MatDialog } from '@angular/material/dialog';
 import { GenerateExcelModalComponent } from './modal/generate-excel-modal/generate-excel-modal.component';
 import { UploadFileModalComponent } from './modal/upload-file-modal/upload-file-modal.component';
 import { ExcelService } from '../service/excel.service';
 import { CsvService } from '../service/csv.service';
-import { Student } from '../model/student';
 import { EditStudentModalComponent } from './modal/edit-student-modal/edit-student-modal.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { response } from 'express';
-import { LoadingScreenService } from '../loading-screen/loading-screen.service';
 
 @Component({
   selector: 'app-home',
@@ -41,14 +37,12 @@ export class HomeComponent {
   selectedClass: string = '';
 
   constructor(
-    private fb: FormBuilder,
     private cdr: ChangeDetectorRef,
     private studentService: StudentService,
     private dialog: MatDialog,
     private excelService: ExcelService,
     private csvService: CsvService,
-    private snackBar: MatSnackBar,
-    private loadingScreenService: LoadingScreenService
+    private snackBar: MatSnackBar
   ) {
     
   }
@@ -56,6 +50,9 @@ export class HomeComponent {
 
   ngOnInit() {
     this.getPaginatedStudents(this.currentPage-1, this.pageSize, "studentId", this.sortDirection);
+    const arr = [1,2,2,3,4,1,5,5,6];
+    const uniqueArr = [...new Set(arr)]
+    console.log(uniqueArr);
   }
 
   generateExcelFile() {
@@ -113,10 +110,8 @@ export class HomeComponent {
   }
 
   removeStudent(student: any) {
-    this.loadingScreenService.isLoading.next(true);
     this.studentService.deleteStudentById(student.studentId).subscribe({
       next: () => {
-        this.loadingScreenService.isLoading.next(false);
         this.snackBar.open('Student Data removed successfully', 'Close', {
           duration: 5000,
           horizontalPosition: "end",
@@ -148,10 +143,8 @@ export class HomeComponent {
   }
 
   searchByStudentId() {
-    this.loadingScreenService.isLoading.next(true);
     this.studentService.getStudentById(this.studentId).subscribe({
       next: (response) => {
-        this.loadingScreenService.isLoading.next(false);
         this.visibleStudentData = [];
         this.visibleStudentData.push(response);
       }
@@ -228,20 +221,15 @@ export class HomeComponent {
   }
 
   exportData(event: any) {
-    console.log("Event: ", event)
     const type: string = event;
-    console.log("Student Data: ", this.students);
     if (type === 'excel') {
-      this.loadingScreenService.isLoading.next(true);
       this.excelService.exportToExcelFile().subscribe({
         next: (response) => {
-          this.loadingScreenService.isLoading.next(false);
           console.log("File: ", response);
           this.downloadFile(response, 'student_data', 'application/vnd.ms-excel')
         },
 
         error: (err) => {
-          this.loadingScreenService.isLoading.next(false);
           this.snackBar.open(err.error.error, 'Close', {
             duration: 5000,
             horizontalPosition: "end",
@@ -252,16 +240,13 @@ export class HomeComponent {
         }
       })
     } else if (type === 'csv') {
-      this.loadingScreenService.isLoading.next(true);
         this.csvService.exportToCsvFile().subscribe({
           next: (response) => {
-            this.loadingScreenService.isLoading.next(false);
             console.log("File: ", response);
             this.downloadFile(response, 'student_data','text/csv')
 
           },
           error: (err) => {
-            this.loadingScreenService.isLoading.next(false);
             this.snackBar.open(err.error.error, 'Close', {
               duration: 5000,
               horizontalPosition: "end",

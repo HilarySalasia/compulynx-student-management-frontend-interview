@@ -119,10 +119,8 @@ export class UploadFileModalComponent {
     formData.append('fileKey', fileToUpload, fileToUpload.name);
 
     if (this.convert) {
-      this.loadingScreenService.isLoading.next(true);
       this.excelService.convertExcelToCsv(fileToUpload).subscribe({
         next: (result) => {
-          this.loadingScreenService.isLoading.next(false);
           this.snackBar.open(result.text.toString(), 'Close', {
             duration: 5000,
             horizontalPosition: "end",
@@ -132,23 +130,18 @@ export class UploadFileModalComponent {
         },
 
         error: (err) => {
-          this.loadingScreenService.isLoading.next(false);
           this.snackBar.open(err.error.error, 'Close', {
             duration: 5000,
             horizontalPosition: "end",
             panelClass: "notif-error"
           });
-          this.dialogRef.close({ successful: false });
-  
           console.error('Error saving data', err);
           this.dialogRef.close({ successful: false });
         }
       });
     } else if (this.upload) {
-      this.loadingScreenService.isLoading.next(true);
       this.csvService.uploadStudentsData(fileToUpload).subscribe({
         next: (result) => {
-          this.loadingScreenService.isLoading.next(false);
           this.snackBar.open('Data Uploaded Successfully', 'Close', {
             duration: 5000,
             horizontalPosition: "end",
@@ -158,14 +151,11 @@ export class UploadFileModalComponent {
         },
 
         error: (err) => {
-          this.loadingScreenService.isLoading.next(false);
           this.snackBar.open(err.error.error, 'Close', {
             duration: 5000,
             horizontalPosition: "end",
             panelClass: "notif-error"
           });
-          this.dialogRef.close({ successful: false });
-  
           console.error('Error saving data', err);
           this.dialogRef.close({ successful: false });
         }

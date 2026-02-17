@@ -46,18 +46,13 @@ export class GenerateExcelModalComponent {
   onSave() {
     // Validate input fields here
 
-    this.loadingScreenService.isLoading.next(true);
-    // console.log("read pmas: ", this.lmsPremiumMasks.pmasCode);
     this.excelService.generateExcelFile(this.numberOfRows).subscribe({
       next:(result) => {
-        console.log("result: ", result)
-        this.loadingScreenService.isLoading.next(false);
         this.snackBar.open(result.text.toString(), 'Close', {
           duration: 3000,
           horizontalPosition: "end",
           panelClass: "notif-success"
         });
-        // this.globalService.(result);
         
       this.dialogRef.close({ successful: true });
       },
@@ -68,9 +63,6 @@ export class GenerateExcelModalComponent {
           horizontalPosition: "end",
           panelClass: "notif-error"
         });
-        this.dialogRef.close({ successful: false });
-
-        console.error('Error saving data', error);
         this.dialogRef.close({ successful: false });
       }
       
